@@ -45,7 +45,7 @@ void lerImagem(FILE *input, Imagem **imagem)
     img->linhas = linhas;
     img->maxValPixel = maxVal;
 
-    for (int i = 0; i < totalPixels; i++)
+    for (int i = 0; i < totalPixels - 1; i++)
     {
         if (fscanf(input, "%d", &img->pixels[i]) != 1)
         {
@@ -65,7 +65,7 @@ void salvarImagem(FILE *output, Imagem *imagem)
     fprintf(output, "%d\n", imagem->maxValPixel);
 
     int totalPixels = imagem->colunas * imagem->linhas;
-    for (int i = 0; i < totalPixels;i++){
+    for (int i = 0; i < totalPixels - 1;i++){
         fprintf(output, "%d\n", imagem->pixels[i]);  
     }
 }

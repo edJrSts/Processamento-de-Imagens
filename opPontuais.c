@@ -13,7 +13,6 @@ typedef struct
 
 void lerImagem(FILE *input, Imagem **imagem)
 {
-
     char tipo[3];
     if (fscanf(input, "%2s", tipo) != 1)
     {
@@ -45,7 +44,7 @@ void lerImagem(FILE *input, Imagem **imagem)
     img->linhas = linhas;
     img->maxValPixel = maxVal;
 
-    for (int i = 0; i < totalPixels; i++)
+    for (int i = 0; i < totalPixels - 1; i++)
     {
         if (fscanf(input, "%d", &img->pixels[i]) != 1)
         {
@@ -56,6 +55,7 @@ void lerImagem(FILE *input, Imagem **imagem)
     }
 
     *imagem = img;
+    free(img);
 }
 
 void salvarImagem(FILE *output, Imagem *imagem)
@@ -65,7 +65,7 @@ void salvarImagem(FILE *output, Imagem *imagem)
     fprintf(output, "%d\n", imagem->maxValPixel);
 
     int totalPixels = imagem->colunas * imagem->linhas;
-    for (int i = 0; i < totalPixels;i++){
+    for (int i = 0; i < totalPixels - 1 ;i++){
         fprintf(output, "%d\n", imagem->pixels[i]);  
     }
 }
@@ -75,11 +75,12 @@ void negativar(FILE *input){
     lerImagem(input,&imagem);
 
     int totalPixels = imagem->colunas*imagem->linhas;
-    for(int i = 0,i < totalPixels;i++){
+    for(int i = 0,i < totalPixels - 1;i++){
         imagem->pixels[i] = imagem->maxValPixel - imagem->pixels[i];
     }
 
     salvarImagem(output, imagem);
+    free(imagem);
 }
 
 void limiarizar(FILE *input,int limiar){
@@ -87,7 +88,7 @@ void limiarizar(FILE *input,int limiar){
     lerImagem(input,&imagem);
 
     int totalPixels = imagem->colunas*imagem->linhas;
-    for(int i = 0,i < totalPixels;i++){
+    for(int i = 0,i < totalPixels - 1;i++){
         if(imagem->pixels[i] > limiar){
             imagem->pixels[i] = imagem->maxValPixel;
         }else{
@@ -96,11 +97,11 @@ void limiarizar(FILE *input,int limiar){
     }
 
     salvarImagem(output, imagem);
+    free(imagem);
 }
 
 int main(int argc, char *argv[])
 {
-
     if (argc < 3)
     {
         printf(stderr, "Uso: %s <arquivo_de_entrada> <arquivo_de_saida>\n", argv[0]);
@@ -109,8 +110,6 @@ int main(int argc, char *argv[])
 
     FILE *input = fopen(argv[1], "r");
     FILE *output = fopen(argv[2], "w");
-
-    Imagem *imagem = NULL;
 
     int opcao;
     printf("Escolha uma opcao:\n0 - Negativar\n1 - Limiarizar")
@@ -126,8 +125,7 @@ int main(int argc, char *argv[])
     }else{
         printf("Opcao invalida!")
     }
-
-    free(imagem);
+    
 
     fclose(input);
     fclose(output);
