@@ -70,12 +70,12 @@ void salvarImagem(FILE *output, Imagem *imagem)
     }
 }
 
-void negativar(FILE *input){
+void negativar(FILE *input,FILE *output){
     Imagem *imagem = NULL;
     lerImagem(input,&imagem);
 
     int totalPixels = imagem->colunas*imagem->linhas;
-    for(int i = 0,i < totalPixels - 1;i++){
+    for(int i = 0;i < totalPixels - 1;i++){
         imagem->pixels[i] = imagem->maxValPixel - imagem->pixels[i];
     }
 
@@ -83,12 +83,12 @@ void negativar(FILE *input){
     free(imagem);
 }
 
-void limiarizar(FILE *input,int limiar){
+void limiarizar(FILE *input,FILE *output,int limiar){
     Imagem *imagem = NULL;
     lerImagem(input,&imagem);
 
     int totalPixels = imagem->colunas*imagem->linhas;
-    for(int i = 0,i < totalPixels - 1;i++){
+    for(int i = 0;i < totalPixels - 1;i++){
         if(imagem->pixels[i] > limiar){
             imagem->pixels[i] = imagem->maxValPixel;
         }else{
@@ -100,11 +100,34 @@ void limiarizar(FILE *input,int limiar){
     free(imagem);
 }
 
+void gerarHistograma(FILE *input,FILE *output){
+    Imagem *imagem = NULL;
+    lerImagem(input,&imagem);
+
+    int totalPixels = imagem->colunas*imagem->linhas;
+    int histograma[imagem->maxValPixel + 1];
+    for(int i = 0;i < imagem->maxValPixel;i++){
+        imagem->pixels[i] = 0;
+        for(int j = 0;j < totalPixels - 1;j++){
+            if(i == imagem->pixels[j]){
+                imagem->pixels[i]++;
+            }
+        }
+    }
+
+    for (int i = 0; i < imagem->maxValPixel ;i++){
+        fprintf(output, "%d\n", imagem->pixels[i]);  
+    }
+
+    free(imagem);
+
+}
+
 int main(int argc, char *argv[])
 {
     if (argc < 3)
     {
-        printf(stderr, "Uso: %s <arquivo_de_entrada> <arquivo_de_saida>\n", argv[0]);
+        printf("Uso: %s <arquivo_de_entrada> <arquivo_de_saida>\n");
         return 1;
     }
 
@@ -112,21 +135,22 @@ int main(int argc, char *argv[])
     FILE *output = fopen(argv[2], "w");
 
     int opcao;
-    printf("Escolha uma opcao:\n0 - Negativar\n1 - Limiarizar")
+    printf("Escolha uma opcao:\n0 - Negativar\n1 - Limiarizar\n2 - Gerar Histograma");
     scanf("%d",&opcao);
     
     if(opcao = 0){
-        negativar(input);
+        negativar(input,output);
     }else if(opcao = 1){
         int limiar;
-        printf("Informe o valor do limiar:")
+        printf("Informe o valor do limiar:");
         scanf("%d",&limiar);
-        limiarizar(input,limiar);
+        limiarizar(input,output,limiar);
+    }else if(opcao = 2){
+        gerarHistograma(input,output);
     }else{
-        printf("Opcao invalida!")
+        printf("Opcao invalida!");
     }
     
-
     fclose(input);
     fclose(output);
 
